@@ -33,7 +33,7 @@ COLUMNS = [
 
 # === Étape 1 : Extraction ===
 def download_data(url: str, columns: list) -> pd.DataFrame:
-    print("📥 Téléchargement des données...")
+    print("Téléchargement des données...")
     response = requests.get(url)
     if response.status_code != 200:
         raise Exception(f"Erreur lors du téléchargement : {response.status_code}")
@@ -42,7 +42,7 @@ def download_data(url: str, columns: list) -> pd.DataFrame:
                        sep=' ', 
                        header=None, 
                        names=columns)
-    print("✅ Données téléchargées avec succès.")
+    print("Données téléchargées avec succès.")
     return data
 
 # === Étape 2 : Transformation ===
@@ -55,7 +55,7 @@ def transform_data(df: pd.DataFrame) -> pd.DataFrame:
     for col in cat_columns:
         df[col] = df[col].astype('category')
     
-    print("✅ Transformation terminée.")
+    print("Transformation terminée.")
     return df
 
 # === Étape 3 : Upload MinIO ===
@@ -72,12 +72,12 @@ def upload_to_minio(filename: str, bucket: str):
     # Créer le bucket si besoin
     buckets = s3.list_buckets()
     if not any(b['Name'] == bucket for b in buckets.get('Buckets', [])):
-        print(f"📦 Création du bucket `{bucket}`")
+        print(f"Création du bucket `{bucket}`")
         s3.create_bucket(Bucket=bucket)
 
     # Upload du fichier
     s3.upload_file(Filename=filename, Bucket=bucket, Key=filename)
-    print("✅ Upload terminé.")
+    print("Upload terminé.")
 
 # === Étape 4 : Chargement dans SQLite ===
 def load_into_sqlite(csv_path: str, db_path: str, table_name: str):
@@ -86,13 +86,13 @@ def load_into_sqlite(csv_path: str, db_path: str, table_name: str):
     if dir_name:
         os.makedirs(dir_name, exist_ok=True)
     
-    print(f"🗄️ Chargement dans SQLite → table `{table_name}`")
+    print(f"Chargement dans SQLite → table `{table_name}`")
     conn = sqlite3.connect(db_path)
     df = pd.read_csv(csv_path)
 
     df.to_sql(table_name, conn, if_exists='replace', index=False)
     conn.close()
-    print("✅ Chargement terminé dans SQLite.")
+    print("Chargement terminé dans SQLite.")
 
 # === Pipeline principal ===
 if __name__ == "__main__":
@@ -130,7 +130,7 @@ if __name__ == "__main__":
         upload_to_minio(OUTPUT_CSV, MINIO_BUCKET)
         load_into_sqlite(OUTPUT_CSV, SQLITE_DB_PATH, SQLITE_TABLE_NAME)
     except Exception as e:
-        print("❌ Une erreur est survenue dans le pipeline.")
+        print("Une erreur est survenue dans le pipeline.")
         raise e
 
  
