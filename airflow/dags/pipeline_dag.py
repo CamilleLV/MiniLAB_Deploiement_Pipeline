@@ -2,6 +2,10 @@ from airflow import DAG
 from airflow.operators.bash import BashOperator
 from datetime import datetime
 import os
+from dotenv import load_dotenv
+
+# === Chargement des variables d’environnement ===
+load_dotenv()
 
 default_args = {
     "owner": "airflow",
@@ -19,10 +23,10 @@ dag = DAG(
 )
 
 # Adapter le chemin ici
-script_path = "C:\\Users\\User\\Documents\\COURS\\Pipeline\\Atl_Pipeline\\Lab_Atelier_Deploiment_Pipeline\\MiniLAB_Deploiement_Pipeline\\airflow\\scripts\\pipeline_german_credit.py"
+PIPELINE_SCRIPT_PATH = os.getenv("PIPELINE_SCRIPT_PATH", "airflow/scripts/pipeline_german_credit.py")
 
 run_pipeline = BashOperator(
     task_id="run_credit_pipeline",
-    bash_command=f"python {script_path}",
+    bash_command=f"python {PIPELINE_SCRIPT_PATH}",
     dag=dag
 )
